@@ -94,18 +94,15 @@ function pll_get_plugin_fullname($plugin_slug) {
 }
 
 function pll_get_plugin_info($plugin_slug) {
-	$plugins = NULL;
 	$all = get_plugins();
 	foreach ($all as $key => $item) {
-		$pluginName = pathinfo($key, PATHINFO_FILENAME);
-		if ($pluginName == $plugin_slug) {
-			$plugins = get_plugins(DIRECTORY_SEPARATOR . dirname($key));
-			break;
+		$plugin_base_dir = dirname($key);
+
+		// Ensure the plugin name matches and avoid scanning subdirectories
+		if (pathinfo($key, PATHINFO_FILENAME) === $plugin_slug && strpos($plugin_base_dir, '/') === FALSE) {
+			return $item; // Return the matched plugin directly
 		}
 	}
 
-	if (!empty($plugins)) {
-		return array_pop($plugins);
-	}
 	return [];
 }
